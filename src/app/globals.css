@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-[#F7F8FA] text-text font-sans text-sm leading-relaxed;
+  }
+}
+
+@layer components {
+  .form-label {
+    @apply block text-xs font-semibold uppercase tracking-wide text-text-secondary mb-1.5;
+  }
+
+  .form-input {
+    @apply w-full rounded-lg border border-border-strong bg-surface px-3 py-2.5 text-sm text-text outline-none transition-colors;
+    @apply focus:border-brand focus:ring-[3px] focus:ring-brand/10;
+  }
+
+  .form-textarea {
+    @apply form-input min-h-[90px] resize-y leading-relaxed;
+  }
+}

@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum StaffRole {
+  ADMIN
+  DOCTOR
+  RECEPTIONIST
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  INTAKE_DONE
+  WAITING
+  IN_CONSULTATION
+  COMPLETED
+  CANCELLED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+model Clinic {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String?
+  timezone  String   @default("UTC")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  staff        Staff[]
+  patients     Patient[]
+  appointments Appointment[]
+
+  @@map("clinics")
+}
+
+model Staff {
+  id        String    @id @default(cuid())
+  clinicId  String
+  authId    String    @unique
+  name      String
+  email     String
+  role      StaffRole @default(RECEPTIONIST)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+
+  clinic               Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  doctorAppointments   Appointment[] @relation("DoctorAppointments")
+
+  @@index([clinicId])
+  @@index([authId])
+  @@map("staff")
+}
+
+model Patient {
+  id        String    @id @default(cuid())
+  clinicId  String
+  fullName  String
+  dob       DateTime? @db.Date
+  gender    Gender?
+  phone     String?
+  email     String?
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+
+  clinic       Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+
+  @@index([clinicId])
+  @@index([clinicId, fullName])
+  @@map("patients")
+}
+
+model Appointment {
+  id           String            @id @default(cuid())
+  clinicId     String
+  patientId    String
+  doctorId     String?
+  scheduledAt  DateTime          @db.Timestamptz(6)
+  status       AppointmentStatus @default(SCHEDULED)
+  intakeToken  String            @unique @default(cuid())
+  createdAt    DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime          @updatedAt @db.Timestamptz(6)
+
+  clinic     Clinic      @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient    Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor     Staff?      @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: SetNull)
+  intakeForm IntakeForm?
+  visitNote  VisitNote?
+
+  @@index([clinicId])
+  @@index([clinicId, status])
+  @@index([clinicId, scheduledAt])
+  @@index([intakeToken])
+  @@map("appointments")
+}
+
+model IntakeForm {
+  id               String    @id @default(cuid())
+  appointmentId    String    @unique
+  allergies        String?
+  medications      String?
+  medicalHistory   String?
+  chiefComplaint   String?
+  painLevel        Int?
+  symptomDuration  String?
+  consentSigned    Boolean   @default(false)
+  signatureData    String?
+  submittedAt      DateTime? @db.Timestamptz(6)
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@map("intake_forms")
+}
+
+model VisitNote {
+  id             String   @id @default(cuid())
+  appointmentId  String   @unique
+  transcript     String?
+  subjective     String?
+  objective      String?
+  assessment     String?
+  plan           String?
+  generatedByAI  Boolean  @default(false)
+  aiGeneratedAt  DateTime? @db.Timestamptz(6)
+  pdfUrl         String?
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(6)
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@map("visit_notes")
+}
