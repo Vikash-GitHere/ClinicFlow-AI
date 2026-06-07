@@ -1,5 +1,18 @@
+<<<<<<< HEAD
+# ClinicFlow AI
+  UW PICO 5.09                               File: README.md                                  
+
+<<<<<<< HEAD
 # ClinicFlow AI
 
+AI-powered clinic workflow tool for small clinics and solo doctors. Reduces paperwork and con$
+
+**Not** an EMR, hospital management system, or billing platform.
+
+## Stack
+
+^G Get Help    ^O WriteOut    ^R Read File   ^Y Prev Pg     ^K Cut Text    ^C Cur Pos     
+^X Exit        ^J Justify     ^W Where is    ^V Next Pg     ^U UnCut Text  ^T To Spell    
 AI-powered clinic workflow tool for small clinics and solo doctors. Reduces paperwork and consultation documentation time.
 
 **Not** an EMR, hospital management system, or billing platform.
@@ -93,3 +106,6 @@ src/
 | **3** | Doctor dashboard + consultation notes |
 | **4** | AI SOAP note generation |
 | **5** | Visit summary PDF |
+=======
+# ClinicFlow-AI
+>>>>>>> 14633581d9279fc7dca675f57ecd1f6766487fe0
